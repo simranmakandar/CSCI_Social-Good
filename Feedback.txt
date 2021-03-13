@@ -1,0 +1,28 @@
+Keck School of medicine: (4 people)
+Notes:
+1. Too much information on each page, remove "unnecessary" visualizations.
+2. Try to find a way of presenting live count (of flights and covid cases) on front page. Region wise
+3. Look for more issues to address
+
+USC Marshall: (2 people)
+Notes:
+1. Liked graphs
+2. Like detail
+3. Want live count
+4. Interesting for data analysis
+
+USC Viterbi (5 people) (Speak again on 15th March)
+1. Liked detail
+2. Want to play around with more visualisations, graph placement to see what suits best
+3. Focus on Live count since people will be more interested in that 
+
+Non Tech perspective (3 people)
+1. Want simpler graphs
+2. Simpler interface
+3. more information about what is going on ex: vaccinations, new covid variants etc.
+
+USC Alumni (Amazon)
+1. Showed all my feedback notes to them.
+2. Suggested a new design 
+3. Abstract detailed info for people who are interested in deeper insights
+4. Simple interface for those who just want basic info
