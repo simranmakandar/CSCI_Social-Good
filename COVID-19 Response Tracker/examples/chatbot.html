@@ -1,0 +1,414 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <title>CSCI 499</title>
+
+    <!-- for mobile screens -->
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <!-- stylesheets are conveniently separated into components -->
+    <link rel="stylesheet" media="all" href="../component/styles/setup.css">
+    <link rel="stylesheet" media="all" href="../component/styles/says.css">
+    <link rel="stylesheet" media="all" href="../component/styles/reply.css">
+    <link rel="stylesheet" media="all" href="../component/styles/typing.css">
+    <link rel="stylesheet" media="all" href="../component/styles/input.css">
+    <style>
+        body {
+            background: #dcdde0;
+        }
+
+        .bubble-container {
+            height: 100vh;
+        }
+
+        .bubble-container .input-wrap textarea {
+            margin: 0;
+            width: calc(100% - 30px);
+        }
+    </style>
+</head>
+
+<body>
+
+    <!-- container element for chat window -->
+    <div id="chat"></div>
+
+    <!-- import the JavaScript file -->
+    <script src="../component/Bubbles.js"></script>
+    <script>
+    // conversation object stored in separate variable:
+var convo = {
+  // "ice" (as in "breaking the ice") is a required conversation object
+  // that maps the first thing the bot will say to the user
+  ice: {
+    // "says" defines an array of sequential bubbles
+    // that the bot will produce
+    says: [
+      "Hello! 😀",
+      "I hope you are taking the utmost care during these testing times",
+      "I'd love to get to know your thoughts on a topic",
+      "Do you have a moment?",
+    //   "<img src=https://meanbusiness.com/wp-content/uploads/2018/04/PuppyEatingBanana.gif />"
+    ],
+    // "reply" is an array of possible options the user can pick from
+    // as a reply
+    reply: [
+      {
+        question: "Talk to me!", // label for the reply option
+        answer: "chapter-one" // key for the next conversation object
+      },
+      {
+        question: "Sometime later", // label for the reply option
+        answer: "end" // key for an "escape valve"; we refer to this whenever a reply signals the end of the convo
+      }
+      // {
+      //   question: "What “other special things?”", // label for the reply option
+      //   answer: "sidetrack" // key for a "side note" we can reference from multiple points in the chat
+      // }
+    ]
+  }, // end required "ice" conversation object
+
+  // side note
+  sidetrack: {
+    says: [
+      "Things which go way beyond a single topic of conversation!",
+      "<img src=https://meanbusiness.com/wp-content/uploads/2018/04/Walk-Cycle-Banana-Jelly-Bean-GIF-by-Ethan-Barnowsky-source.gif />",
+      "As in this case we are branching out from the main topic of “bananas and ice cream” into another series of prompts and possible replies.",
+      "This could be a useful way provide more instructions or context."
+    ],
+    reply: [
+      {
+        question: "Tell me more.",
+        answer: "intro-context" // key for another side note; in this instance, we're using it to contextualize the Q&A we're heading into
+      },
+      {
+        question: "Got it: on with the chat!",
+        answer: "chapter-one" // no further sidetrack required, returning to the main conversation tree
+      }
+    ]
+  },
+
+  // another side note
+  "intro-context": {
+    says: [
+      "This is an example of further instructions...",
+      "...Context and side-notes...",
+      "...With a way to return back to the main trunk of the conversation, like so:"
+    ],
+    reply: [
+      {
+        question: "To the main topic, bananas and ice cream!",
+        answer: "chapter-one"
+      }
+    ]
+  },
+
+  // main conversation trunk
+  "chapter-one": {
+    says: [
+      "Excellent!",
+      "Have you taken at least one dose of the COVID-19 vaccine?",
+    ],
+    reply: [
+      {
+        question: "Yes, I have! 👍",
+        answer: "chapter-two" // here both replies send people onto the same next chapter
+      },
+      {
+        question: "No, I have not 👎", // both replies send people onto the same next chapter
+        answer: "chapter-no"
+      }
+    //   {
+    //     question: "What’s this button?",
+    //     answer: "intro-context"
+    //   }
+    ]
+  },
+  "chapter-two": {
+    says: [
+      "Awesome!",
+    //   "<img src=https://meanbusiness.com/wp-content/uploads/2018/04/IceCream-MultipleCones.gif />",
+      "Thank you so much for being responsible with your health and the well-being of others around you! 🙌",
+    //   "...Or to the end of the chat, an “escape valve” we can use to end the chat if you want."
+    ],
+    reply: [
+      {
+        question: "Give me another prompt.",
+        answer: "chapter-four"
+      },
+      {
+        question: "End the chat.👋 ",
+        answer: "end" // an example of using the Escape Valve for ineligible, Not Applicable participants
+      }
+    ]
+  },
+  "chapter-no": {
+    says: [
+      "How would you best describe your situation with the COVID-19 vaccines?"
+    //   "<img src=https://meanbusiness.com/wp-content/uploads/2018/04/IceCream-MultipleCones.gif />",
+    //   "Your next answer will take you to another prompt...",
+    //   "...Or to the end of the chat, an “escape valve” we can use to end the chat if you want."
+    ],
+    reply: [
+      {
+        question: "Vaccines unavailable for my age-group",
+        answer: "chapter-unavailable"
+      },
+      {
+        question: "I believe the vaccines are not safe for me.",
+        answer: "chapter-unsafe"
+      },
+      {
+        question: "I do not have enough information about the right vaccine for me.",
+        answer: "chapter-insufficient-info"
+      },
+      {
+        question: "End the chat.",
+        answer: "end" // an example of using the Escape Valve for ineligible, Not Applicable participants
+      }
+    ]
+  },
+  // this chapter is skipped
+  "chapter-insufficient-info": {
+    // we skip this in this example to show you can do that; use it if you want.
+    says: [
+      "No problem!",
+      "Go back to the Home page to get information about Vaccine Types, Response Tracking, Benefits and Approved Vaccines",
+      "Should you have any more concerns, you know where to find me!",
+    ],
+    reply: [
+      {
+        question: "OK, I will. 🖖",
+        answer: "end"
+      },
+      {
+        question: "I have more questions!",
+        answer: "chapter-no"
+      }
+    ]
+  },
+  "chapter-unavailable": {
+    // we skip this in this example to show you can do that; use it if you want.
+    says: [
+      "Registration for the vaccination for people above 18 will open from 28 April on Co-WIN and Aarogya Setu.",
+      "Download the app to register for your vaccine <a href = https://www.cowin.gov.in/>here</a> 🧑🏽‍💻",
+      "Go back to the home page for more information about vaccines before you visit your nearest vaccination center"
+    //   "<img src=http://meanbusiness.com/wp-content/uploads/2018/03/Coral-Participate-Phone_and_Laptop.jpg />"
+    ],
+    reply: [
+      {
+        question: "OK, I will.",
+        answer: "chapter-four"
+      }
+    ]
+  },
+  "chapter-unsafe": {
+    // we skip this in this example to show you can do that; use it if you want.
+    says: [
+      "Am I correct in understanding that you are not ready to take the vaccine due to concerns with the content of the vaccines? 🤔"
+    //   "<img src=http://meanbusiness.com/wp-content/uploads/2018/03/Coral-Participate-Phone_and_Laptop.jpg />"
+    ],
+    reply: [
+      {
+        question: "Yes",
+        answer: "chapter-yesunsafe"
+      },
+      {
+        question: "No",
+        answer: "chapter-no"
+      }
+    ]
+  },
+  // continue with main conversation trunk
+  "chapter-four": {
+    says: [
+      "You're awesome!",
+    //   "<img src=http://meanbusiness.com/wp-content/uploads/2018/02/mel_b-Thank-You.gif />",
+    //   "More prompts?"
+    ],
+    reply: [
+      {
+        question: "I have some more concerns about the vaccine.",
+        answer: "chapter-no"
+      }
+  ]},
+  "chapter-yesunsafe": {
+    says: [
+      "Which of the following best describes your concerns with the contents of the vaccine?"
+    //   "<img src=http://meanbusiness.com/wp-content/uploads/2018/02/mel_b-Thank-You.gif />",
+    //   "More prompts?"
+    ],
+    reply: [
+      {
+        question: "I am afraid the vaccines can be deadly",
+        answer: "chapter-deadly"
+      },
+      {
+        question: "I am afraid the vaccines can bring unwanted side-effects.",
+        answer: "chapter-side-effects"
+      },
+      {
+        question: "I do not think these vaccines have any effect against COVID.",
+        answer: "chapter-no-effect"
+      },
+      {
+        question: "I am not convinced that these vaccines have been tested sufficiently.",
+        answer: "chapter-insufficient"
+      }
+    ]
+  },
+  "chapter-five": {
+    says: [
+      "Answering 'Yes' here will open a new window with a page from another site...", // call a function to an external resource / application outside of chat-bubble's purview
+      "...And confirm that you're awesome, again.",
+      "Answering 'Not interested' will end the chat." // call a function to an external resource / application outside of chat-bubble's purview
+    ],
+    reply: [
+      {
+        question: "Not interested.",
+        answer: "end"
+      },
+      {
+        question: "Yes!",
+        answer: "externalResourceFunction" // function name that will be executed
+      }
+    ]
+  },
+  "chapter-insufficient": {
+    says: [
+      "I understand",
+      "COVID-19 vaccines, like Pfizer/BioNTech, withstood several clinical trials involving thousands of participants. The data in those trials was 'blinded'👨‍🔬", // call a function to an external resource / application outside of chat-bubble's purview
+      "...meaning no one, except an independent group of scientists, knew who got the vaccine and who got the placebo. Not even the drug company itself.",
+      "Indeed, experts say the development of the COVID-19 vaccine is one of the fastest they have ever seen",
+      "'Normally, it can take two, three, four, five years to have a vaccine developed and approved for wide use,” said Jim Tiessen, director of the Master of Health Administration in Community Care program at Ryerson University.",
+      "So to have (the COVID-19 vaccine) developed, tested, being produced, and ready for rollout in some countries now is remarkable.",
+      "They say speed does not equate sloppiness! 👾",
+      "<a href=https://globalnews.ca/news/7511664/fact-or-fiction-covid-19-vaccine/>Here<a/> is the perfect article to answer your question! ",
+      "Answering 'Okay' will end the chat." // call a function to an external resource / application outside of chat-bubble's purview
+    ],
+    reply: [
+      {
+        question: "Okay",
+        answer: "end"
+      },
+      {
+        question: "I have some more concerns with the vaccine",
+        answer: "chapter-no"
+      }
+      // {
+      //   question: "Yes!",
+      //   answer: "externalResourceFunction" // function name that will be executed
+      // }
+    ]
+  },
+  "chapter-no-effect": {
+    says: [
+      "Many more people have assumed that the vaccines have no effect against fighting COVID", // call a function to an external resource / application outside of chat-bubble's purview
+      "I am here for you to get your questions answered! 😇",
+      "Data from vaccine clinical trials and real-world evidence show that even in the face of variants, the coronavirus vaccines can drastically cut the risk of severe disease ",
+      "I think <a href=https://www.healthline.com/health-news/covid-19-vaccines-are-still-effective-amid-rising-number-of-variants>this article</a> by WHO will clearly answer your question",
+      "I trust facts over opinions! Register for your first vaccination dose <a href=https://www.mohfw.gov.in/covid_vaccination/vaccination/faqs.html#vaccine-registration>here!</a>",
+      "Answering 'Not interested' will end the chat." // call a function to an external resource / application outside of chat-bubble's purview
+    ],
+    reply: [
+      {
+        question: "Not interested.",
+        answer: "end"
+      },
+      {
+        question: "I need more answers!",
+        answer: "chapter-no" // function name that will be executed
+      }
+    ]
+  },
+  "chapter-deadly": {
+    says: [
+      "I understand your concerns with the vaccine",
+      "COVID-19 vaccines are safe, and getting vaccinated will help protect you against developing severe COVID-19 disease 👨‍🔬",
+      "You may experience some mild side effects after getting vaccinated, which are signs that your body is building protection",
+      " Please visit <a href = https://www.nature.com/articles/d41586-021-00290-x>this</a> website to understand what you should know about the vaccine safety in detail!", // call a function to an external resource / application outside of chat-bubble's purview
+      "Start over your conversation with me if you need more anwers! ",
+      "Answering 'Not Interested'" // call a function to an external resource / application outside of chat-bubble's purview
+    ],
+    reply: [
+      {
+        question: "Not interested.👋🏻",
+        answer: "end"
+      },
+      {
+        question: "Start Over!",
+        answer: "ice" // function name that will be executed
+      },
+      {
+        question: "I have some more concerns with the vaccine",
+        answer: "chapter-no" // function name that will be executed
+      }
+    ]
+  },
+  "chapter-side-effects": {
+    says: [
+      "It is true that most people experience side effects after taking their first or second dose of the vaccine", // call a function to an external resource / application outside of chat-bubble's purview
+      "...however 👀",
+      "Generally these side effects are your body's way of telling you that it is preparing and buillding itself for protection against COVID!",
+      "I think you'd be interested in reading <a href=https://www.who.int/news-room/feature-stories/detail/side-effects-of-covid-19-vaccines>this</a>",
+      "Take some time to read this! Should you have any more concerns, you know where to reach me",
+      "Answering 'Okay' will end the chat." // call a function to an external resource / application outside of chat-bubble's purview
+    ],
+    reply: [
+      {
+        question: "Okay",
+        answer: "end"
+      },
+      {
+        question: "I need more answers! 👀",
+        answer: "chapter-no" // function name that will be executed
+      }
+    ]
+  },
+  end: {
+    says: [
+      "Thanks for your time and attention.",
+      "<img src=https://media.giphy.com/media/26gsjCZpPolPr3sBy/giphy.gif>",
+      "The chat is over, but you can <strong>start over</strong> to see how this conversation could have gone differently."
+    ],
+    reply: [
+      {
+        question: "Start over 😁",
+        answer: "ice"
+      }
+    ]
+  }
+} // end conversation object
+
+// initialize by constructing a named function...
+var chatWindow = new Bubbles(
+  document.getElementById("chat"), // ...passing HTML container element...
+  "chatWindow" // ...and name of the function as a parameter
+)
+
+// `.talk()` will get your bot to begin the conversation
+chatWindow.talk(
+  // pass your JSON/JavaScript object to `.talk()` function where
+  // you define how the conversation between the bot and user will go
+  convo
+)
+
+// this function is called when user clicks "Yes!" in the "chapter-four" dialogue
+externalResourceFunction = function() {
+  // together with the function we'll restart the conversation starting from "capther-four"
+  // to make sure the user isn't left hanging after the function below has been executed
+  chatWindow.talk(convo, "chapter-four")
+
+  // function that opens external window
+  window.open(
+    "https://meanbusiness.com/wp-content/uploads/2018/04/IceCream-BananaSkis.gif",
+    "_blank",
+    "toolbar=no,scrollbars=no,menubar=no,resizable=no,location=no,titlebar=no,width=300,height=600"
+  )
+}
+</script>
+</body>
+
+</html>
