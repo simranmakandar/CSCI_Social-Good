@@ -1,0 +1,515 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <title>CSCI 499</title>
+
+    <!-- for mobile screens -->
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <!-- stylesheets are conveniently separated into components -->
+    <link rel="stylesheet" media="all" href="../component/styles/setup.css">
+    <link rel="stylesheet" media="all" href="../component/styles/says.css">
+    <link rel="stylesheet" media="all" href="../component/styles/reply.css">
+    <link rel="stylesheet" media="all" href="../component/styles/typing.css">
+    <link rel="stylesheet" media="all" href="../component/styles/input.css">
+    <style>
+        body {
+            background: #dcdde0;
+        }
+
+        .bubble-container {
+            height: 100vh;
+        }
+
+        .bubble-container .input-wrap textarea {
+            margin: 0;
+            width: calc(100% - 30px);
+        }
+    </style>
+</head>
+
+<body>
+
+    <!-- container element for chat window -->
+    <div id="chat"></div>
+
+    <!-- import the JavaScript file -->
+    <script src="../component/Bubbles.js"></script>
+    <script>
+    // conversation object stored in separate variable:
+var convo = {
+  // "ice" (as in "breaking the ice") is a required conversation object
+  // that maps the first thing the bot will say to the user
+  ice: {
+    // "says" defines an array of sequential bubbles
+    // that the bot will produce
+    says: [
+      "Hello again! 😀",
+      "This section is dedicated to enable your participation in <strong>Clinical Trials</strong> or just get some <strong>FAQs</strong> answered!",
+      "Would you be interested in getting to know more about this?",
+    //   "<img src=https://meanbusiness.com/wp-content/uploads/2018/04/PuppyEatingBanana.gif />"
+    ],
+    // "reply" is an array of possible options the user can pick from
+    // as a reply
+    reply: [
+      {
+        question: "Yes!", // label for the reply option
+        answer: "chapter-one" // key for the next conversation object
+      },
+      {
+        question: "Sometime later 👋", // label for the reply option
+        answer: "end" // key for an "escape valve"; we refer to this whenever a reply signals the end of the convo
+      }
+      // {
+      //   question: "What “other special things?”", // label for the reply option
+      //   answer: "sidetrack" // key for a "side note" we can reference from multiple points in the chat
+      // }
+    ]
+  }, // end required "ice" conversation object
+
+  // side note
+
+  // main conversation trunk
+  "chapter-one": {
+    says: [
+      "Great! 👌",
+      "What would you want to begin with?",
+    ],
+    reply: [
+      {
+        question: "Participate in Clinical Trial(s)",
+        answer: "chapter-trial" // here both replies send people onto the same next chapter
+      },
+      {
+        question: "FAQs", // both replies send people onto the same next chapter
+        answer: "chapter-no"
+      }
+    //   {
+    //     question: "What’s this button?",
+    //     answer: "intro-context"
+    //   }
+    ]
+  },
+  "chapter-trial": {
+    says: [
+      "Awesome!",
+    //   "<img src=https://meanbusiness.com/wp-content/uploads/2018/04/IceCream-MultipleCones.gif />",
+      "This section will help you find clinical trials that are recommended for your Age and Gender!",
+      "To begin with, please specify your gender at birth",
+    //   "...Or to the end of the chat, an “escape valve” we can use to end the chat if you want."
+    ],
+    reply: [
+      {
+        question: "Male",
+        answer: "chapter-male-age"
+      },
+      {
+        question: "Female ",
+        answer: "chapter-female-age" // an example of using the Escape Valve for ineligible, Not Applicable participants
+      }
+    ]
+  },
+  // this chapter is skipped
+  "chapter-male-age": {
+    // we skip this in this example to show you can do that; use it if you want.
+    says: [
+      "Please select the age group you belong to",
+    ],
+    reply: [
+      {
+        question: "18-25",
+        answer: "chapter-1825"
+      },
+      {
+        question: "26-45",
+        answer: "chapter-2645"
+      },
+      {
+        question: "46 and above",
+        answer: "chapter-46above"
+      },
+    ]
+  },
+  "chapter-1825": {
+    // we skip this in this example to show you can do that; use it if you want.
+    says: [
+      "Searching relevant clinical trials for you",
+      "Found 11 relevant trials",
+      "Click on the links to go to each of them individually",
+      "<a href=https://clinicaltrials.gov/ct2/show/NCT04324463>Anti-Coronavirus Therapies to Prevent Progression of Coronavirus Disease 2019 (COVID-19) Trial</a>",
+      "<a href=https://clinicaltrials.gov/ct2/show/NCT04339608>Max COVID19-Study</a>",
+      "<a href=https://clinicaltrials.gov/ct2/show/NCT04345640>The Spectrum and Profile of COVID-19 Infection and Its Impact on Liver.</a>",
+      "<a href=https://clinicaltrials.gov/ct2/show/NCT04353518>Clinical Trial to Evaluate Mycobacterium w in Preventing COVID-19 in Subjects at Risk of Getting Infected With COVID-19</a>",
+      "<a href=https://clinicaltrials.gov/ct2/show/NCT04358809>Clinical Trial of Mycobacterium w in COVID-19 Positive Patients, Hospitalized But Not Critically Ill</a>",
+      "<a href=https://clinicaltrials.gov/ct2/show/NCT04367064>To Study the Clinical Characteristics and Treatment Outcome of COVID-19 Patients Admitted in Hospitals of Max Healthcare</a>",
+      "<a href=https://clinicaltrials.gov/ct2/show/NCT04368871>Radiographic Findings and Their Temporal Changes in COVID-19 Positive Changes Patients: A Prospective Study</a>",
+      "<a href=https://clinicaltrials.gov/ct2/show/NCT04368884>Assess the Seroconversion Status of Health Care Workers Suspected or Confirmed Cases of COVID-19 Patients</a>",
+      "<a href=https://clinicaltrials.gov/ct2/show/NCT04369300>Anxiety And Depression During COVID-19 IN INDIA</a>",
+      "<a href=https://clinicaltrials.gov/ct2/show/NCT04373824>Max Ivermectin- COVID 19 Study Versus Standard of Care Treatment for COVID 19 Cases. A Pilot Study</a>",
+      "<a href=https://clinicaltrials.gov/ct2/show/NCT04382040>A Phase II, Controlled Clinical Study Designed to Evaluate the Effect of ArtemiC in Patients Diagnosed With COVID-19</a>"
+    ],
+    reply: [
+      {
+        question: "Start over",
+        answer: "ice"
+      },
+      {
+        question: "Switch to FAQs",
+        answer: "chapter-FAQ"
+      }
+    ]
+  },
+  "chapter-2645": {
+    // we skip this in this example to show you can do that; use it if you want.
+    says: [
+      "Searching relevant clinical trials for you",
+      "Found 14 relevant trials",
+      "Click on the links to go to each of them individually",
+      "<a href=https://clinicaltrials.gov/ct2/show/NCT04382053>Study of Efficacy and Safety of DV890 in Patients With COVID-19 Pneumonia</a>",
+      "<a href=https://clinicaltrials.gov/ct2/show/NCT04339608>Max COVID19-Study</a>",
+      "<a href=https://clinicaltrials.gov/ct2/show/NCT04345640>The Spectrum and Profile of COVID-19 Infection and Its Impact on Liver.</a>",
+      "<a href=https://clinicaltrials.gov/ct2/show/NCT04353518>Clinical Trial to Evaluate Mycobacterium w in Preventing COVID-19 in Subjects at Risk of Getting Infected With COVID-19</a>",
+      "<a href=https://clinicaltrials.gov/ct2/show/NCT04475471>WORLD HEART FEDERATION (WHF) COVID-19 and Cardiovascular Disease Survey</a>",
+      "<a href=https://clinicaltrials.gov/ct2/show/NCT04641481>An Efficacy and Safety Clinical Trial of an Investigational COVID-19 Vaccine (BBV152) in Adult Volunteers</a>",
+      "<a href=https://clinicaltrials.gov/ct2/show/NCT04358809>Clinical Trial of Mycobacterium w in COVID-19 Positive Patients, Hospitalized But Not Critically Ill</a>",
+      "<a href=https://clinicaltrials.gov/ct2/show/NCT04367064>To Study the Clinical Characteristics and Treatment Outcome of COVID-19 Patients Admitted in Hospitals of Max Healthcare</a>",
+      "<a href=https://clinicaltrials.gov/ct2/show/NCT04368871>Radiographic Findings and Their Temporal Changes in COVID-19 Positive Changes Patients: A Prospective Study</a>",
+      "<a href=https://clinicaltrials.gov/ct2/show/NCT04368884>Assess the Seroconversion Status of Health Care Workers Suspected or Confirmed Cases of COVID-19 Patients</a>",
+      "<a href=https://clinicaltrials.gov/ct2/show/NCT04369300>Anxiety And Depression During COVID-19 IN INDIA</a>",
+      "<a href=https://clinicaltrials.gov/ct2/show/NCT04373824>Max Ivermectin- COVID 19 Study Versus Standard of Care Treatment for COVID 19 Cases. A Pilot Study</a>",
+      "<a href=https://clinicaltrials.gov/ct2/show/NCT04382040>A Phase II, Controlled Clinical Study Designed to Evaluate the Effect of ArtemiC in Patients Diagnosed With COVID-19</a>",
+      "<a href=https://clinicaltrials.gov/ct2/show/NCT04678193>COVID-19 Risk Assessment for Hospitalization Outcomes and Epidemiology Efficacy</a>"
+    ],
+    reply: [
+      {
+        question: "Start over",
+        answer: "ice"
+      },
+      {
+        question: "Switch to FAQs",
+        answer: "chapter-FAQ"
+      }
+    ]
+  },
+  "chapter-46above": {
+    // we skip this in this example to show you can do that; use it if you want.
+    says: [
+      "Searching relevant clinical trials for you",
+      "Found 13 relevant trials",
+      "Click on the links to go to each of them individually",
+      "<a href=https://clinicaltrials.gov/ct2/show/NCT04382053>Study of Efficacy and Safety of DV890 in Patients With COVID-19 Pneumonia</a>",
+      "<a href=https://clinicaltrials.gov/ct2/show/NCT04640233>Clinical Trial to Assess Safety and Immunogenicity of Gam-COVID-Vac Combined Vector Vaccine for Severe Acute Respiratory</a>",
+      "<a href=https://clinicaltrials.gov/ct2/show/NCT04345640>The Spectrum and Profile of COVID-19 Infection and Its Impact on Liver.</a>",
+      "<a href=https://clinicaltrials.gov/ct2/show/NCT04353518>Clinical Trial to Evaluate Mycobacterium w in Preventing COVID-19 in Subjects at Risk of Getting Infected With COVID-19</a>",
+      "<a href=https://clinicaltrials.gov/ct2/show/NCT04475471>WORLD HEART FEDERATION (WHF) COVID-19 and Cardiovascular Disease Survey</a>",
+      "<a href=https://clinicaltrials.gov/ct2/show/NCT04641481>An Efficacy and Safety Clinical Trial of an Investigational COVID-19 Vaccine (BBV152) in Adult Volunteers</a>",
+      "<a href=https://clinicaltrials.gov/ct2/show/NCT04634214>The Severity of COVID 19 in Diabetes and Non-diabetes Patients</a>",
+      "<a href=https://clinicaltrials.gov/ct2/show/NCT04367064>To Study the Clinical Characteristics and Treatment Outcome of COVID-19 Patients Admitted in Hospitals of Max Healthcare</a>",
+      "<a href=https://clinicaltrials.gov/ct2/show/NCT04368871>Radiographic Findings and Their Temporal Changes in COVID-19 Positive Changes Patients: A Prospective Study</a>",
+      "<a href=https://clinicaltrials.gov/ct2/show/NCT04368884>Assess the Seroconversion Status of Health Care Workers Suspected or Confirmed Cases of COVID-19 Patients</a>",
+      "<a href=https://clinicaltrials.gov/ct2/show/NCT04369300>Anxiety And Depression During COVID-19 IN INDIA</a>",
+      "<a href=https://clinicaltrials.gov/ct2/show/NCT04373824>Max Ivermectin- COVID 19 Study Versus Standard of Care Treatment for COVID 19 Cases. A Pilot Study</a>",
+      "<a href=https://clinicaltrials.gov/ct2/show/NCT04582331>Improving Real-time COVID-19 Monitoring Through Smartphone Voice Analysis</a>",
+      "<a href=https://clinicaltrials.gov/ct2/show/NCT04678193>COVID-19 Risk Assessment for Hospitalization Outcomes and Epidemiology Efficacy</a>",
+      "<a href=https://clinicaltrials.gov/ct2/show/NCT04534712>Lymphocyte - Monocyte Ratio As An Independent Predictor For Progression Of Illness In Patients With Covid-19</a>"
+    
+    ],
+    reply: [
+      {
+        question: "Start over",
+        answer: "ice"
+      },
+      {
+        question: "Switch to FAQs",
+        answer: "chapter-FAQ"
+      }
+    ]
+  },
+    // continue with main conversation trunk
+    "chapter-female-age": {
+    says: [
+      "Please select the age group you belong to",
+    ],
+    reply: [
+      {
+        question: "18-25",
+        answer: "chapter-f1825"
+      },
+      {
+        question: "26-45",
+        answer: "chapter-f2645"
+      },
+      {
+        question: "45 and above",
+        answer: "chapter-f25above"
+      }
+  ]},
+  // continue with main conversation trunk
+  "chapter-f1825": {
+    says: [
+      "Matching profile to available trials",
+      "Found 10 relevant results",
+      "Please click on these links to go over each individually",
+      "<a href=https://clinicaltrials.gov/ct2/show/NCT04475471>WORLD HEART FEDERATION (WHF) COVID-19 and Cardiovascular Disease Survey</a>",
+      "<a href=https://clinicaltrials.gov/ct2/show/NCT04641481>An Efficacy and Safety Clinical Trial of an Investigational COVID-19 Vaccine (BBV152) in Adult Volunteers</a>",
+      "<a href=https://clinicaltrials.gov/ct2/show/NCT04634214>The Severity of COVID 19 in Diabetes and Non-diabetes Patients</a>",
+      "<a href=https://clinicaltrials.gov/ct2/show/NCT04367064>To Study the Clinical Characteristics and Treatment Outcome of COVID-19 Patients Admitted in Hospitals of Max Healthcare</a>",
+      "<a href=https://clinicaltrials.gov/ct2/show/NCT04368871>Radiographic Findings and Their Temporal Changes in COVID-19 Positive Changes Patients: A Prospective Study</a>",
+      "<a href=https://clinicaltrials.gov/ct2/show/NCT04469660>Impact of COVID-19 Pandemic on the Psychological Wellbeing of women in India</a>",
+      "<a href=https://clinicaltrials.gov/ct2/show/NCT04421027>A Study of Baricitinib (LY3009104) in Participants With COVID-19</a>",
+      "<a href=https://clinicaltrials.gov/ct2/show/NCT04368871>Radiographic Findings and Their Temporal Changes in COVID-19 Positive Changes Patients: A Prospective Study</a>",
+      "<a href=https://clinicaltrials.gov/ct2/show/NCT04324463>Anti-Coronavirus Therapies to Prevent Progression of Coronavirus Disease 2019 (COVID-19) Trial</a>",
+      "<a href=https://clinicaltrials.gov/ct2/show/NCT04394117>Controlled evaLuation of Angiotensin Receptor Blockers for COVID-19 respIraTorY Disease</a>"
+    //   "<img src=http://meanbusiness.com/wp-content/uploads/2018/02/mel_b-Thank-You.gif />",
+    //   "More prompts?"
+    ],
+    reply: [
+      {
+        question: "Start Over",
+        answer: "ice"
+      },
+      {
+        question: "Switch to FAQs",
+        answer: "chapter-FAQ"
+      }
+  ]},
+  "chapter-f2645": {
+    says: [
+      "Matching input to available trials",
+      "Found 14 relevant results",
+      "Please click on these links to go over each individually",
+      "<a href=https://clinicaltrials.gov/ct2/show/NCT04475471>WORLD HEART FEDERATION (WHF) COVID-19 and Cardiovascular Disease Survey</a>",
+      "<a href=https://clinicaltrials.gov/ct2/show/NCT04641481>An Efficacy and Safety Clinical Trial of an Investigational COVID-19 Vaccine (BBV152) in Adult Volunteers</a>",
+      "<a href=https://clinicaltrials.gov/ct2/show/NCT04634214>The Severity of COVID 19 in Diabetes and Non-diabetes Patients</a>",
+      "<a href=https://clinicaltrials.gov/ct2/show/NCT04367064>To Study the Clinical Characteristics and Treatment Outcome of COVID-19 Patients Admitted in Hospitals of Max Healthcare</a>",
+      "<a href=https://clinicaltrials.gov/ct2/show/NCT04368871>Radiographic Findings and Their Temporal Changes in COVID-19 Positive Changes Patients: A Prospective Study</a>",
+      "<a href=https://clinicaltrials.gov/ct2/show/NCT04469660>Impact of COVID-19 Pandemic on the Psychological Wellbeing of women in India</a>",
+      "<a href=https://clinicaltrials.gov/ct2/show/NCT04421027>A Study of Baricitinib (LY3009104) in Participants With COVID-19</a>",
+      "<a href=https://clinicaltrials.gov/ct2/show/NCT04368871>Radiographic Findings and Their Temporal Changes in COVID-19 Positive Changes Patients: A Prospective Study</a>",
+      "<a href=https://clinicaltrials.gov/ct2/show/NCT04324463>Anti-Coronavirus Therapies to Prevent Progression of Coronavirus Disease 2019 (COVID-19) Trial</a>",
+      "<a href=https://clinicaltrials.gov/ct2/show/NCT04394117>Controlled evaLuation of Angiotensin Receptor Blockers for COVID-19 respIraTorY Disease</a>",
+      "<a href=https://clinicaltrials.gov/ct2/show/NCT04641195>Vitamin D and Zinc Supplementation for Improving Treatment Outcomes Among COVID-19 Patients in India</a>",
+      "<a href=https://clinicaltrials.gov/ct2/show/NCT04657484>Comparison of Two Corticosteroid Regimens for Post COVID-19 Diffuse Lung Disease</a>",
+      "<a href=https://clinicaltrials.gov/ct2/show/NCT04509973>Higher vs. Lower Doses of Dexamethasone for COVID-19 and Severe Hypoxia</a>",
+      "<a href=https://clinicaltrials.gov/ct2/show/NCT04491227>Global Assessment of Acute and Chronic Kidney Disease Incidence and Outcomes in Patients With COVID-19 Infection</a>"
+    //   "<img src=http://meanbusiness.com/wp-content/uploads/2018/02/mel_b-Thank-You.gif />",
+    //   "More prompts?"
+    ],
+    reply: [
+      {
+        question: "Start Over",
+        answer: "ice"
+      },
+      {
+        question: "Switch to FAQs",
+        answer: "chapter-FAQ"
+      }
+  ]},
+  "chapter-f645above": {
+    says: [
+      "Matching input to available trials",
+      "Found 11 relevant results",
+      "Please click on these links to go over each individually",
+      "<a href=https://clinicaltrials.gov/ct2/show/NCT04491227>Global Assessment of Acute and Chronic Kidney Disease Incidence and Outcomes in Patients With COVID-19 Infection</a>",
+    //   "<img src=http://meanbusiness.com/wp-content/uploads/2018/02/mel_b-Thank-You.gif />",
+      "<a href=https://clinicaltrials.gov/ct2/show/NCT04475471>WORLD HEART FEDERATION (WHF) COVID-19 and Cardiovascular Disease Survey</a>",
+      "<a href=https://clinicaltrials.gov/ct2/show/NCT04641481>An Efficacy and Safety Clinical Trial of an Investigational COVID-19 Vaccine (BBV152) in Adult Volunteers</a>",
+      "<a href=https://clinicaltrials.gov/ct2/show/NCT04634214>The Severity of COVID 19 in Diabetes and Non-diabetes Patients</a>",
+      "<a href=https://clinicaltrials.gov/ct2/show/NCT04421027>A Study of Baricitinib (LY3009104) in Participants With COVID-19</a>",
+      "<a href=https://clinicaltrials.gov/ct2/show/NCT04368871>Radiographic Findings and Their Temporal Changes in COVID-19 Positive Changes Patients: A Prospective Study</a>",
+      "<a href=https://clinicaltrials.gov/ct2/show/NCT04324463>Anti-Coronavirus Therapies to Prevent Progression of Coronavirus Disease 2019 (COVID-19) Trial</a>",
+      "<a href=https://clinicaltrials.gov/ct2/show/NCT04394117>Controlled evaLuation of Angiotensin Receptor Blockers for COVID-19 respIraTorY Disease</a>",
+      "<a href=https://clinicaltrials.gov/ct2/show/NCT04641195>Vitamin D and Zinc Supplementation for Improving Treatment Outcomes Among COVID-19 Patients in India</a>",
+      "<a href=https://clinicaltrials.gov/ct2/show/NCT04657484>Comparison of Two Corticosteroid Regimens for Post COVID-19 Diffuse Lung Disease</a>",
+      "<a href=https://clinicaltrials.gov/ct2/show/NCT04509973>Higher vs. Lower Doses of Dexamethasone for COVID-19 and Severe Hypoxia</a>"
+     
+    //   "More prompts?"
+    ],
+    reply: [
+      {
+        question: "Start Over",
+        answer: "ice"
+      },
+      {
+        question: "Switch to FAQs",
+        answer: "chapter-FAQ"
+      }
+  ]},
+  "chapter-FAQ": {
+    says: [
+      "There are some Frequently Asked Questions related to this ChatBot and we decided to answer them here!",
+      "Click on the question you need the answer for"
+     
+    //   "More prompts?"
+    ],
+    reply: [
+      {
+        question: "Why does this Bot need my Age?",
+        answer: "chapter-whyage"
+      },
+      {
+        question: "Why does this Bot need my Gender?",
+        answer: "chapter-whygender"
+      },
+      {
+        question: "Are my responses being stored?",
+        answer: "chapter-nostorage"
+      },
+      {
+        question: "How are my responses being used?",
+        answer: "chapter-usedhow"
+      },
+      {
+        question: "Will I be personally contacted for my responses?",
+        answer: "chapter-nocontact"
+      }
+  ]},
+  "chapter-whyage": {
+    says: [
+      "Each clinical trial uses specific eligibility criteria to determine who may qualify to participate in a study.",
+      "What would you like to do?",
+    ],
+    reply: [
+      {
+        question: "Start FAQ section again",
+        answer: "chapter-FAQ"
+      },
+      {
+        question: "Start Clinical Trial",
+        answer: "chapter-trial"
+      },
+      {
+        question: "End conversation",
+        answer: "end"
+      },
+    ]
+  },
+  "chapter-whygender": {
+    says: [
+      "Each clinical trial uses specific eligibility criteria to determine who may qualify to participate in a study.",
+      "What would you like to do?",
+    ],
+    reply: [
+      {
+        question: "Start FAQ section again",
+        answer: "chapter-FAQ"
+      },
+      {
+        question: "Start Clinical Trial",
+        answer: "chapter-trial"
+      },
+      {
+        question: "End conversation",
+        answer: "end"
+      },
+    ]
+  },
+  "chapter-nostorage": {
+    says: [
+      "No, your data is not being stored by this Bot",
+      "Your data is only being used to filter out clinical trials for your use",
+      "What would you like to do?",
+    ],
+    reply: [
+      {
+        question: "Start FAQ section again",
+        answer: "chapter-FAQ"
+      },
+      {
+        question: "Start Clinical Trial",
+        answer: "chapter-trial"
+      },
+      {
+        question: "End conversation",
+        answer: "end"
+      },
+    ]
+  },
+  "chapter-usedhow": {
+    says: [
+      "Your data is only being used to filter out clinical trials for your use",
+      "What would you like to do?",
+    ],
+    reply: [
+      {
+        question: "Start FAQ section again",
+        answer: "chapter-FAQ"
+      },
+      {
+        question: "Start Clinical Trial",
+        answer: "chapter-trial"
+      },
+      {
+        question: "End conversation",
+        answer: "end"
+      },
+    ]
+  },
+  "chapter-nocontact": {
+    says: [
+      "No, you will not be contacted by anybody regarding your data.",
+      "What would you like to do?",
+    ],
+    reply: [
+      {
+        question: "Start FAQ section again",
+        answer: "chapter-FAQ"
+      },
+      {
+        question: "Start Clinical Trial",
+        answer: "chapter-trial"
+      },
+      {
+        question: "End conversation",
+        answer: "end"
+      },
+    ]
+  },
+
+  end: {
+    says: [
+      "Thanks for your time and attention!",
+      "<img src=https://media.giphy.com/media/QZtKnYQOHU2VMwmjqS/giphy.gif>",
+      "The chat is over, but you can <strong>start over</strong> to see how this conversation could have gone differently."
+    ],
+    reply: [
+      {
+        question: "Start over 😁",
+        answer: "ice"
+      }
+    ]
+  }
+} // end conversation object
+
+// initialize by constructing a named function...
+var chatWindow = new Bubbles(
+  document.getElementById("chat"), // ...passing HTML container element...
+  "chatWindow" // ...and name of the function as a parameter
+)
+
+// `.talk()` will get your bot to begin the conversation
+chatWindow.talk(
+  // pass your JSON/JavaScript object to `.talk()` function where
+  // you define how the conversation between the bot and user will go
+  convo
+)
+
+// this function is called when user clicks "Yes!" in the "chapter-four" dialogue
+externalResourceFunction = function() {
+  // together with the function we'll restart the conversation starting from "capther-four"
+  // to make sure the user isn't left hanging after the function below has been executed
+  chatWindow.talk(convo, "chapter-four")
+
+  // function that opens external window
+  window.open(
+    "https://meanbusiness.com/wp-content/uploads/2018/04/IceCream-BananaSkis.gif",
+    "_blank",
+    "toolbar=no,scrollbars=no,menubar=no,resizable=no,location=no,titlebar=no,width=300,height=600"
+  )
+}
+</script>
+</body>
+
+</html>
